@@ -68,7 +68,7 @@ Frequency hopping: disabled
 
 */
 
-#define FREQUENCY 915.0 // 433.0, 868.0 or 915.0
+#define FREQUENCY 434.0 // 433.0, 868.0 or 915.0
 #define BANDWIDTH 125.0
 #define SPREADING_FACTOR 9
 #define CODING_RATE 7
@@ -76,14 +76,29 @@ Frequency hopping: disabled
 #define PREAMBLE_LEN 8
 #define GAIN 0
 
+#define SX1278_SYNC_WORD 0x12
+
+
 // SX1278 has the following connections:
 // NSS pin:   10
 // DIO0 pin:  2
 // RESET pin: 9
 // DIO1 pin:  3
-// SX1278 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1);
-// SX1278 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1, SPI, SPISettings());  //433Mhz
-SX1276 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1, SPI, SPISettings()); //868Mhz or 915Mhz
+
+// SX1272 has different connections:
+// NSS pin:   9
+// DIO0 pin:  4
+// RESET pin: 5
+// DIO1 pin:  6
+
+//#define LORA_CS  9
+//#define DIO0     4
+//#define LORA_RST 5
+//#define DIO1     6
+
+//SX1278 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1);
+SX1278 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1, SPI, SPISettings());  //433Mhz
+//SX1276 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1, SPI, SPISettings()); //868Mhz or 915Mhz
 
 // or using RadioShield
 // https://github.com/jgromes/RadioShield
@@ -96,9 +111,11 @@ void setup()
     // initialize SX1278 with default settings
     Serial.print(F("[SX1278] Initializing ... "));
     SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-    int state = radio.begin(FREQUENCY, BANDWIDTH, SPREADING_FACTOR, CODING_RATE, SX127X_SYNC_WORD, OUTPUT_POWER, PREAMBLE_LEN, GAIN);
+    int state = radio.begin(FREQUENCY, BANDWIDTH, SPREADING_FACTOR, CODING_RATE, SX1278_SYNC_WORD, OUTPUT_POWER, PREAMBLE_LEN, GAIN);
     //int state = radio.begin();
-    if (state == ERR_NONE)
+    //radio.setSyncWord(0x12);
+    
+    if (state == RADIOLIB_ERR_NONE)
     {
         Serial.println(F("success!"));
     }
@@ -130,7 +147,9 @@ void setup()
 
 void loop()
 {
-    //Serial.print(F("[SX1278] Waiting for incoming transmission ... "));
+    //Serial.println(F("[SX1278] Waiting for incoming transmission ... "));
+
+    
 
     // you can receive data as an Arduino String
     // NOTE: receive() is a blocking method!
@@ -139,6 +158,8 @@ void loop()
     String str;
     String sensorADC;
     int state = radio.receive(str);
+    //Serial.print("Error Code ");
+    //Serial.println(state);
 
     // you can also receive data as byte array
     /*
@@ -146,7 +167,7 @@ void loop()
     int state = radio.receive(byteArr, 8);
   */
 
-    if (state == ERR_NONE)
+    if (state == RADIOLIB_ERR_NONE)
     {
         Serial.println(str);
         display.clearDisplay();

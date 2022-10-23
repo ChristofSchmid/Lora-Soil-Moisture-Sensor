@@ -22,7 +22,7 @@
 // include the library
 #include <RadioLib.h>
 #include <SPI.h>
-#include "avr/boot.h"
+//#include "avr/boot.h"
 
 // create instance of LoRa class using SX1278 module
 // this pinout corresponds to RadioShield
@@ -30,8 +30,8 @@
 
 #define DIO0 2
 #define DIO1 6
-//#define DIO2 7
-//#define DIO5 8
+#define DIO2 7
+#define DIO5 8
 
 #define LORA_RST 9
 #define LORA_CS 10
@@ -59,16 +59,21 @@ Frequency hopping: disabled
 
 */
 
-#define FREQUENCY 915.0
+#define FREQUENCY 434.0
 #define BANDWIDTH 125.0
 #define SPREADING_FACTOR 9
 #define CODING_RATE 7
 #define OUTPUT_POWER 10
 #define PREAMBLE_LEN 8
 #define GAIN 0
+#define SX1278_SYNC_WORD 0x12
+#define ERR_NONE true
+#define ERR_RX_TIMEOUT true
+#define ERR_CRC_MISMATCH true
 
-SX1276 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1);
-//SX1278 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1, SPI, SPISettings());
+
+//SX1276 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1);
+SX1278 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1, SPI, SPISettings());
 
 
 void setup() {
@@ -78,7 +83,7 @@ void setup() {
   Serial.print(F("Initializing ... "));
 
   //int state = radio.begin();
-  int state = radio.begin(FREQUENCY, BANDWIDTH, SPREADING_FACTOR, CODING_RATE, SX127X_SYNC_WORD, OUTPUT_POWER, PREAMBLE_LEN, GAIN);
+  int state = radio.begin(FREQUENCY, BANDWIDTH, SPREADING_FACTOR, CODING_RATE, SX1278_SYNC_WORD, OUTPUT_POWER, PREAMBLE_LEN, GAIN);
   if (state == ERR_NONE) {
     Serial.println(F("success!"));
   } else {
