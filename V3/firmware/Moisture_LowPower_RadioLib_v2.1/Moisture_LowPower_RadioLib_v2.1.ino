@@ -40,10 +40,11 @@ String node_id = String("ID") + "010000";
 #define PWM_OUT_PIN 9
 #define SENSOR_POWER_PIN 5
 #define ADC_PIN A2
+#define SX1278_SYNC_WORD 0x12
 
 #define DEBUG_OUT_ENABLE 1
 
-SX1276 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1);
+SX1278 radio = new Module(LORA_CS, DIO0, LORA_RST, DIO1);
 AHT10 humiditySensor;
 
 bool readSensorStatus = false;
@@ -83,8 +84,8 @@ bool AHT_init()
 }
 void Lora_init()
 {
-    int state = radio.begin(FREQUENCY, BANDWIDTH, SPREADING_FACTOR, CODING_RATE, SX127X_SYNC_WORD, OUTPUT_POWER, PREAMBLE_LEN, GAIN);
-    if (state == ERR_NONE)
+    int state = radio.begin(FREQUENCY, BANDWIDTH, SPREADING_FACTOR, CODING_RATE, SX1278_SYNC_WORD, OUTPUT_POWER, PREAMBLE_LEN, GAIN);
+    if (state == RADIOLIB_ERR_NONE)
     {
 #if DEBUG_OUT_ENABLE
         Serial.println(F("success!"));
